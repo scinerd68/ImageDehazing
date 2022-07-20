@@ -52,20 +52,39 @@ def recover(img, atm_light, transmission, t0=0.1):
     
     return dehazed
 
-if __name__ == '__main__':
-    src = cv2.imread('img/realworld/BJ_Bing_185.jpeg')
-    src = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
-    img = src / 255
-    plt.figure(figsize=(10, 10))
-    plt.imshow(img)
 
+def dehaze(src):
+    """src: input is RGB image"""
+    img = src / 255
     dark = get_dark_channel(img, 15)
     atm_light = estimate_atm_light(img, dark)
     transmission = estimate_transmission(img, atm_light, 0.95, 15)
-    transmission_refined = soft_matting(src, transmission)
+    transmission_refined = soft_matting(src, transmission, radius=60)
     dehazed = recover(img, atm_light, transmission_refined)
+
+    return dehazed
+
+
+if __name__ == '__main__':
+    src = cv2.imread('img/realworld/BJ_Bing_185.jpeg')
+    src = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
+    # img = src / 255
+    # plt.figure(figsize=(10, 10))
+    # plt.imshow(img)
+
+    # dark = get_dark_channel(img, 15)
+    # atm_light = estimate_atm_light(img, dark)
+    # transmission = estimate_transmission(img, atm_light, 0.95, 15)
+    # transmission_refined = soft_matting(src, transmission)
+    # dehazed = recover(img, atm_light, transmission_refined)
+    # plt.figure(figsize=(10, 10))
+    # plt.imshow(dehazed)
+    # plt.show()
+
+    dehazed = dehaze(src)
     plt.figure(figsize=(10, 10))
     plt.imshow(dehazed)
     plt.show()
+
 
     
